@@ -155,3 +155,8 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+TELEGRAM_BOT_TOKEN = "8461732338:AAHtYr7J1Py2mrqYQ9FB8DUotRkdIMhzk1Q"
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
