@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
 class UserAuthTests(APITestCase):
     def setUp(self):
         self.register_url = reverse("register")

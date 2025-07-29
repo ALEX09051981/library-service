@@ -13,11 +13,13 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
-import stripe
+
 
 load_dotenv()
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+import stripe
+stripe.api_key = STRIPE_SECRET_KEY
 DOMAIN = os.getenv("DOMAIN", "http://localhost:8000")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

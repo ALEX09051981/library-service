@@ -7,8 +7,8 @@ User = get_user_model()
 
 class BookAPITest(APITestCase):
     def setUp(self):
-        self.admin = User.objects.create_superuser("admin", "admin@example.com", "adminpass")
-        self.user = User.objects.create_user("user", "user@example.com", "userpass")
+        self.admin = User.objects.create_superuser(email="admin@example.com", password="adminpass")
+        self.user = User.objects.create_user("user@example.com", "userpass")
 
         self.book = Book.objects.create(
             title="Book 1",
