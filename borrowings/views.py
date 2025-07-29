@@ -1,3 +1,7 @@
+import stripe
+from django.conf import settings
+from payments.models import Payment
+
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -40,7 +44,36 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         book.inventory -= 1
         book.save()
 
-        serializer.save(user=self.request.user)
+        borrowing = serializer.save(user=self.request.user)
+
+        # --- Stripe ---
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        amount = borrowing.book.daily_fee * borrowing.get_borrowing_days()
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": f"Borrowing: {borrowing.book.title}"
+                    },
+                    "unit_amount": int(amount * 100),
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=f"{settings.DOMAIN}/payments/success/",
+            cancel_url=f"{settings.DOMAIN}/payments/cancel/",
+        )
+
+        Payment.objects.create(
+            user=self.request.user,
+            borrowing=borrowing,
+            session_url=session.url,
+            session_id=session.id,
+            amount=amount
+        )
 
     @action(detail=True, methods=["post"], url_path="return")
     def return_book(self, request, pk=None):
