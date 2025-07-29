@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 
-# Create your views here.
+def payment_success(request):
+    return JsonResponse({"message": "Payment successful"})
+
+def payment_cancel(request):
+    return JsonResponse({"message": "Payment canceled"})
