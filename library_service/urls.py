@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/docs/swagger/", drf_spectacular.views.SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/docs/redoc/", drf_spectacular.views.SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("api/users/", include("users.urls")),
+    path("api/borrowings/", include("borrowings.urls")),
 ]
