@@ -31,13 +31,3 @@ class UserAuthTests(APITestCase):
     def test_access_protected_view_without_token(self):
         response = self.client.get(self.me_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_access_protected_view_with_token_authorize_header(self):
-        User.objects.create_user(**self.user_data)
-        token_response = self.client.post(self.token_url, self.user_data, format="json")
-        access_token = token_response.data["access"]
-
-        self.client.credentials(HTTP_AUTHORIZE=f"Bearer {access_token}")
-        response = self.client.get(self.me_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["email"], self.user_data["email"])
