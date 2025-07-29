@@ -11,19 +11,16 @@ User = get_user_model()
 
 class PaymentIntegrationTest(APITestCase):
     def setUp(self):
-        # Админ
         self.admin = User.objects.create_superuser(
             email="admin@example.com",
             password="adminpass"
         )
 
-        # Обычный пользователь
         self.user = User.objects.create_user(
             email="user@example.com",
             password="userpass"
         )
 
-        # Книга
         self.book = Book.objects.create(
             title="Test Book",
             author="Test Author",
@@ -34,8 +31,6 @@ class PaymentIntegrationTest(APITestCase):
 
     @patch("stripe.checkout.Session.create")
     def test_create_borrowing_creates_payment(self, mock_stripe_session_create):
-        """Проверка, что при создании Borrowing создаётся Payment"""
-        # Мокаем ответ Stripe
         mock_stripe_session_create.return_value = type(
             "obj", (object,), {
                 "id": "sess_12345",
@@ -50,17 +45,22 @@ class PaymentIntegrationTest(APITestCase):
             "expected_return_date": "2025-08-05"
         }
 
-        response = self.client.post("/api/borrowings/", borrowing_data, format="json")
+        response = self.client.post(
+            "/api/borrowings/",
+            borrowing_data,
+            format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Проверяем, что создано 1 платеж
         payment = Payment.objects.first()
         self.assertIsNotNone(payment)
         self.assertEqual(payment.borrowing.user, self.user)
         self.assertEqual(payment.session_id, "sess_12345")
-        self.assertEqual(payment.session_url, "https://stripe.com/checkout/sess_12345")
+        self.assertEqual(
+            payment.session_url,
+            "https://stripe.com/checkout/sess_12345"
+        )
         self.assertEqual(float(payment.amount), 10.00)  # daily_fee
 
-        # Проверяем, что Stripe был вызван
         mock_stripe_session_create.assert_called_once()

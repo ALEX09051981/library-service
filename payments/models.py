@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Payment(models.Model):
     class Status(models.TextChoices):
         PENDING = "PENDING", "Pending"
