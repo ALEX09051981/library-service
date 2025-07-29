@@ -46,7 +46,6 @@ class BorrowingViewSet(viewsets.ModelViewSet):
 
         borrowing = serializer.save(user=self.request.user)
 
-        # --- Stripe ---
         stripe.api_key = settings.STRIPE_SECRET_KEY
         amount = borrowing.book.daily_fee * borrowing.get_borrowing_days()
 
